@@ -63,8 +63,11 @@ separately so you can reuse or test them on their own.
 
 ## Status
 
-Early skeleton. No test file yet, no build step has been run. See the
-design notes above for known gaps.
+Early skeleton. Each pure function has unit test coverage
+(`src/formatAddress.test.ts`, run with `npm test`) but no build step has
+been run against a published package yet. See the design notes above for
+known gaps: no full US state name mapping, no unit/PO box aware line1/line2
+splitting, no non-US postal code validation, no label formatter, no CLI.
 
 ## License
 
