@@ -41,8 +41,76 @@ export function normalizeCountry(input: string): string {
   return COUNTRY_ALIASES[key] ?? collapsed.toUpperCase();
 }
 
+// Full US state, DC, and territory names as they'd be typed on a form,
+// keyed by a lowercased, period-stripped version of the name. Abbreviations
+// need no lookup: they're already the code once uppercased.
+const US_STATE_NAMES: Record<string, string> = {
+  alabama: 'AL',
+  alaska: 'AK',
+  arizona: 'AZ',
+  arkansas: 'AR',
+  california: 'CA',
+  colorado: 'CO',
+  connecticut: 'CT',
+  delaware: 'DE',
+  florida: 'FL',
+  georgia: 'GA',
+  hawaii: 'HI',
+  idaho: 'ID',
+  illinois: 'IL',
+  indiana: 'IN',
+  iowa: 'IA',
+  kansas: 'KS',
+  kentucky: 'KY',
+  louisiana: 'LA',
+  maine: 'ME',
+  maryland: 'MD',
+  massachusetts: 'MA',
+  michigan: 'MI',
+  minnesota: 'MN',
+  mississippi: 'MS',
+  missouri: 'MO',
+  montana: 'MT',
+  nebraska: 'NE',
+  nevada: 'NV',
+  'new hampshire': 'NH',
+  'new jersey': 'NJ',
+  'new mexico': 'NM',
+  'new york': 'NY',
+  'north carolina': 'NC',
+  'north dakota': 'ND',
+  ohio: 'OH',
+  oklahoma: 'OK',
+  oregon: 'OR',
+  pennsylvania: 'PA',
+  'rhode island': 'RI',
+  'south carolina': 'SC',
+  'south dakota': 'SD',
+  tennessee: 'TN',
+  texas: 'TX',
+  utah: 'UT',
+  vermont: 'VT',
+  virginia: 'VA',
+  washington: 'WA',
+  'west virginia': 'WV',
+  wisconsin: 'WI',
+  wyoming: 'WY',
+  'district of columbia': 'DC',
+  'puerto rico': 'PR',
+  'american samoa': 'AS',
+  guam: 'GU',
+  'northern mariana islands': 'MP',
+  'us virgin islands': 'VI',
+  'virgin islands': 'VI',
+};
+
 export function normalizeState(input: string): string {
-  return collapseWhitespace(input).toUpperCase().replace(/\./g, '');
+  const collapsed = collapseWhitespace(input);
+  if (collapsed.length === 0) {
+    return '';
+  }
+  const key = collapsed.toLowerCase().replace(/\./g, '');
+  return US_STATE_NAMES[key] ?? collapsed.toUpperCase().replace(/\./g, '');
 }
 
 // US ZIP and ZIP+4 get their canonical dashed form. Anything else (postal

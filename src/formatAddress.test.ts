@@ -46,6 +46,20 @@ test('normalizeState uppercases and strips periods', () => {
   assert.equal(normalizeState(''), '');
 });
 
+test('normalizeState maps full US state, DC, and territory names to their code', () => {
+  assert.equal(normalizeState('illinois'), 'IL');
+  assert.equal(normalizeState('Illinois'), 'IL');
+  assert.equal(normalizeState('  new york  '), 'NY');
+  assert.equal(normalizeState('NEW HAMPSHIRE'), 'NH');
+  assert.equal(normalizeState('District of Columbia'), 'DC');
+  assert.equal(normalizeState('puerto rico'), 'PR');
+  assert.equal(normalizeState('virgin islands'), 'VI');
+});
+
+test('normalizeState passes unrecognized names through uppercased', () => {
+  assert.equal(normalizeState('ontario'), 'ONTARIO');
+});
+
 test('normalizePostalCode formats US ZIP and ZIP+4', () => {
   assert.equal(normalizePostalCode('62701', 'US'), '62701');
   assert.equal(normalizePostalCode('627010007', 'US'), '62701-0007');

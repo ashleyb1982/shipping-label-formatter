@@ -60,14 +60,18 @@ separately so you can reuse or test them on their own.
   title-cased, since address lines mix directionals, unit codes, and
   abbreviations (`NE`, `STE 4B`, `PO BOX`) that a generic title-case pass
   would mangle.
+- `normalizeState` recognizes full US state, DC, and territory names
+  ("Illinois", "District of Columbia", "Puerto Rico") in addition to
+  abbreviations, and maps them to the two-letter code. Anything else is
+  passed through uppercased rather than guessed at.
 
 ## Status
 
 Early skeleton. Each pure function has unit test coverage
 (`src/formatAddress.test.ts`, run with `npm test`) but no build step has
 been run against a published package yet. See the design notes above for
-known gaps: no full US state name mapping, no unit/PO box aware line1/line2
-splitting, no non-US postal code validation, no label formatter, no CLI.
+known gaps: no unit/PO box aware line1/line2 splitting, no non-US postal
+code validation, no label formatter, no CLI.
 
 ## License
 
