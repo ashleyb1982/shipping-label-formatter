@@ -7,6 +7,7 @@ import {
   normalizeState,
   normalizePostalCode,
   normalizePhone,
+  normalizeAddressLines,
   normalizeAddress,
 } from './formatAddress';
 
@@ -92,6 +93,29 @@ test('normalizePhone returns digits only for shapes it cannot confidently format
   assert.equal(normalizePhone('+44 20 7946 0958'), '442079460958');
   assert.equal(normalizePhone(''), '');
   assert.equal(normalizePhone('21-555-123-4567'), '215551234567');
+});
+
+test('normalizeAddressLines splits a trailing unit designator off of line1 when line2 is empty', () => {
+  assert.deepEqual(normalizeAddressLines('123 Main St Apt 4B', ''), { line1: '123 Main St', line2: 'Apt 4B' });
+  assert.deepEqual(normalizeAddressLines('123 Main St, Suite 200', ''), { line1: '123 Main St', line2: 'Ste 200' });
+  assert.deepEqual(normalizeAddressLines('123 Main St Ste. 200', ''), { line1: '123 Main St', line2: 'Ste 200' });
+  assert.deepEqual(normalizeAddressLines('123 Main St #4B', ''), { line1: '123 Main St', line2: '#4B' });
+  assert.deepEqual(normalizeAddressLines('123 Main St Unit 12', ''), { line1: '123 Main St', line2: 'Unit 12' });
+});
+
+test('normalizeAddressLines leaves line1 alone when line2 already carries the unit', () => {
+  assert.deepEqual(normalizeAddressLines('123 Main St', 'apt 4b'), { line1: '123 Main St', line2: 'apt 4b' });
+});
+
+test('normalizeAddressLines does not mistake a street name for a unit designator', () => {
+  assert.deepEqual(normalizeAddressLines('4500 Units Dr', ''), { line1: '4500 Units Dr', line2: '' });
+});
+
+test('normalizeAddressLines canonicalizes PO box spellings and drops any separate line2', () => {
+  assert.deepEqual(normalizeAddressLines('PO Box 123', ''), { line1: 'PO Box 123', line2: '' });
+  assert.deepEqual(normalizeAddressLines('P.O. Box 123', ''), { line1: 'PO Box 123', line2: '' });
+  assert.deepEqual(normalizeAddressLines('post office box 123', ''), { line1: 'PO Box 123', line2: '' });
+  assert.deepEqual(normalizeAddressLines('p o box 4b', ''), { line1: 'PO Box 4B', line2: '' });
 });
 
 test('normalizeAddress fills every field with a string even when raw input is empty', () => {

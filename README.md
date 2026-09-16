@@ -45,8 +45,9 @@ const label = normalizeAddress(raw);
 ```
 
 The individual pieces (`toTitleCase`, `normalizeCountry`, `normalizeState`,
-`normalizePostalCode`, `normalizePhone`, `collapseWhitespace`) are exported
-separately so you can reuse or test them on their own.
+`normalizePostalCode`, `normalizePhone`, `normalizeAddressLines`,
+`collapseWhitespace`) are exported separately so you can reuse or test them
+on their own.
 
 ## Design notes
 
@@ -60,6 +61,15 @@ separately so you can reuse or test them on their own.
   title-cased, since address lines mix directionals, unit codes, and
   abbreviations (`NE`, `STE 4B`, `PO BOX`) that a generic title-case pass
   would mangle.
+- When `line2` is blank, `normalizeAddress` looks for a trailing unit
+  designator on `line1` (`Apt`, `Suite`/`Ste`, `Unit`, `Bldg`, `Fl`, `Rm`,
+  `Dept`, or a bare `#`) and moves it to `line2` under a canonical
+  abbreviation, e.g. `"123 Main St Suite 200"` becomes `line1: "123 Main
+  St"`, `line2: "Ste 200"`. If `line2` is already populated, `line1` is
+  left untouched. A `line1` that is nothing but a PO box (`PO Box`,
+  `P.O. Box`, `Post Office Box`, any case) is rewritten to the canonical
+  `"PO Box <number>"` form. This is exported on its own as
+  `normalizeAddressLines`.
 - `normalizeState` recognizes full US state, DC, and territory names
   ("Illinois", "District of Columbia", "Puerto Rico") in addition to
   abbreviations, and maps them to the two-letter code. Anything else is
@@ -70,8 +80,7 @@ separately so you can reuse or test them on their own.
 Early skeleton. Each pure function has unit test coverage
 (`src/formatAddress.test.ts`, run with `npm test`) but no build step has
 been run against a published package yet. See the design notes above for
-known gaps: no unit/PO box aware line1/line2 splitting, no non-US postal
-code validation, no label formatter, no CLI.
+known gaps: no non-US postal code validation, no label formatter, no CLI.
 
 ## License
 
